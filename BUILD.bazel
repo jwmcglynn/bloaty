@@ -23,6 +23,7 @@ cc_binary(
     ]),
     defines = [
         "DISABLE_CAPSTONE",
+        "USE_RE2",
     ],
     includes = ["src"],
     visibility = ["//visibility:public"],
@@ -32,5 +33,6 @@ cc_binary(
         "@com_google_absl//absl/numeric:int128",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/types:optional",
+        "@re2",
     ],
 )
