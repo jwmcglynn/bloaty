@@ -33,12 +33,19 @@
 
 #include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
+#ifndef DISABLE_CAPSTONE
 #include "capstone/capstone.h"
+#endif // DISABLE_CAPSTONE
 
 #include "dwarf/debug_info.h"
 #include "bloaty.pb.h"
 #include "range_map.h"
 #include "re.h"
+
+#ifdef DISABLE_CAPSTONE
+using cs_arch = int;
+using cs_mode = int;
+#endif
 
 namespace bloaty {
 

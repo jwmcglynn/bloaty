@@ -777,6 +777,15 @@ static void CheckNotObject(const char* source, RangeSink* sink) {
   }
 }
 
+#ifdef DISABLE_CAPSTONE
+
+static bool ReadElfArchMode(const InputFile& file, int* arch, int* mode) {
+  const bool capstone_available = false;
+  return capstone_available;
+}
+
+#else // !DISABLE_CAPSTONE
+
 static bool ElfMachineToCapstone(Elf64_Half e_machine, cs_arch* arch,
                                  cs_mode* mode) {
   switch (e_machine) {
@@ -829,19 +838,21 @@ static bool ElfMachineToCapstone(Elf64_Half e_machine, cs_arch* arch,
   }
 }
 
-static bool ReadElfArchMode(const InputFile& file, cs_arch* arch, cs_mode* mode) {
-  bool capstone_available = true;
+static bool ReadElfArchMode(const InputFile& file, int* arch, int* mode) {
+  bool capstone_available = false;
   ForEachElf(file, nullptr,
              [&capstone_available, arch, mode](const ElfFile& elf,
                                                string_view /*filename*/,
                                                uint32_t /*index_base*/) {
-               // Last .o file wins?  (For .a files)?  It's kind of arbitrary,
-               // but a single .a file shouldn't have multiple archs in it.
-               capstone_available &=
-                   ElfMachineToCapstone(elf.header().e_machine, arch, mode);
-             });
+    // Last .o file wins?  (For .a files)?  It's kind of arbitrary,
+    // but a single .a file shouldn't have multiple archs in it.
+    capstone_available &=
+        ElfMachineToCapstone(elf.header().e_machine, arch, mode);
+  });
   return capstone_available;
 }
+
+#endif // !DISABLE_CAPSTONE
 
 static void ReadELFSymbols(const InputFile& file, RangeSink* sink,
                            SymbolTable* table, bool disassemble) {

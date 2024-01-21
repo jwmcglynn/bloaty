@@ -1,0 +1,4 @@
+module(name = "bloaty")
+
+bazel_dep(name = "rules_proto", version = "6.0.0-rc1")
+bazel_dep(name = "abseil-cpp", repo_name = "com_google_absl", version = "20230125.1")

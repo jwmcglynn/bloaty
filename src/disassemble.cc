@@ -20,7 +20,9 @@
 #include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
 #include "bloaty.h"
+#ifndef DISABLE_CAPSTONE
 #include "capstone/capstone.h"
+#endif
 #include "re.h"
 #include "util.h"
 
@@ -39,6 +41,17 @@ static std::string RightPad(const std::string& input, size_t size) {
 }
 
 }  // anonymous namespace
+
+
+#ifdef DISABLE_CAPSTONE
+
+void DisassembleFindReferences(const DisassemblyInfo& info, RangeSink* sink) {}
+
+std::string DisassembleFunction(const DisassemblyInfo& info) {
+  return "<not supported>";
+}
+
+#else  // !DISABLE_CAPSTONE
 
 void DisassembleFindReferences(const DisassemblyInfo& info, RangeSink* sink) {
   if (info.arch != CS_ARCH_X86) {
@@ -93,7 +106,7 @@ cleanup:
   cs_close(&handle);
 }
 
-bool TryGetJumpTarget(cs_arch arch, cs_insn *in, uint64_t* target) {
+bool TryGetJumpTarget(cs_arch arch, cs_insn* in, uint64_t* target) {
   switch (arch) {
     case CS_ARCH_X86:
       switch (in->id) {
@@ -224,5 +237,7 @@ std::string DisassembleFunction(const DisassemblyInfo& info) {
   cs_close(&handle);
   return ret;
 }
+
+#endif // !DISABLE_CAPSTONE
 
 }  // namespace bloaty
