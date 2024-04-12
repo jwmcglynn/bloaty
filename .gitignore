@@ -5,3 +5,4 @@
 !tests/testdata/**
 *.dSYM
 bazel-*
+MODULE.bazel.lock
