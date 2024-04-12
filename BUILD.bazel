@@ -21,6 +21,9 @@ cc_binary(
         "third_party/lief_pe/*.h",
         "third_party/darwin_xnu_macho/**/*.h",
     ]),
+    copts = [
+        "-fexceptions",
+    ],
     defines = [
         "DISABLE_CAPSTONE",
         "USE_RE2",
